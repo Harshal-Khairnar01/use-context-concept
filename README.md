@@ -2,56 +2,63 @@
 
 ## Overview
 
-This project demonstrates a common issue in React called **prop drilling** and motivates the use of the `useContext` hook for better state management.
+This project demonstrates a common issue in React called **prop drilling** and shows how to solve it using the `useContext` hook for better state management.
+
+---
 
 ## The Problem: Prop Drilling
 
-In the current setup, the `count` state is managed in the top-level `App` component. To display and update this value in deeply nested components, you have to pass `count` and `onButtonClick` as props through every intermediate component.
+Previously, the `count` state was managed in the top-level `App` component. To display and update this value in deeply nested components, you had to pass `count` and `onButtonClick` as props through every intermediate component.
 
-**Example:**
+**Example (Before):**
 - `App.jsx` holds the state and passes `count` and `onButtonClick` to `Button`.
 - `Button/index.jsx` receives these props and passes `count` to `Text/index.jsx`.
 
-This approach leads to:
+This approach led to:
 - **Prop Drilling:** Passing data through components that do not need it, just to reach a deeply nested child.
 - **Tight Coupling:** Components become tightly coupled to the structure of their parents.
 - **Difficult Maintenance:** As the app grows, adding or refactoring components becomes harder.
 
-## Why Use `useContext`?
-
-The `useContext` hook allows you to share state and functions across your component tree without manually passing props at every level.
-
-**Benefits:**
-- Eliminates unnecessary prop drilling.
-- Makes components more reusable and easier to maintain.
-- Centralizes shared state and logic.
-
-## Next Steps
-
-To solve the prop drilling problem:
-1. Create a context for the `count` state and updater.
-2. Use the `useContext` hook in any component that needs access to `count` or `setCount`.
-
 ---
 
-**Current Example Without Context:**
+## Solution: Using `useContext`
 
+Now, the project uses the `useContext` hook to share state and functions across the component tree without manually passing props at every level.
+
+### How It Works Now
+
+- A `CountContext` is created to hold the `count` state and its updater.
+- The `CountProvider` wraps the app, making `count` and `setCount` available to any component.
+- Components like `Button` and `Text` use the `useCount` hook to access and update the shared state directly.
+
+**Example (After):**
 ```jsx
 // App.jsx
-const [count, setCount] = useState(0);
-<Button count={count} onButtonClick={() => setCount(count + 1)} />
+import { CountProvider } from "./context/countContext";
+<CountProvider>
+  <Button />
+</CountProvider>
 
 // Button/index.jsx
-const Button = ({ count, onButtonClick }) => (
-  <button onClick={onButtonClick}>Click to increment</button>
-  <Text count={count} />
-);
+import { useCount } from "../../context/countContext";
+const { count, setCount } = useCount();
+<button onClick={() => setCount(count + 1)}>Click to increment</button>
+<Text />
 
 // Text/index.jsx
-const Text = ({ count }) => <p>The count is: {count}</p>;
+import { useCount } from "../../context/countContext";
+const { count } = useCount();
+<p>The count is: {count}</p>
 ```
 
-**With Context, you can avoid passing `count` and `onButtonClick` through every component.**
+### Benefits
+
+- **No Prop Drilling:** No need to pass `count` and `onButtonClick` through every component.
+- **Reusable Components:** Components are decoupled from their parents and easier to reuse.
+- **Centralized State:** Shared state and logic are managed in one place.
 
 ---
 
+## Summary
+
+By using the `useContext` hook, this project eliminates prop drilling and makes state management simpler and more maintainable as your React app grows.

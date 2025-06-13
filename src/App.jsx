@@ -1,16 +1,15 @@
 import "./App.css";
-import React, { useState } from "react";
+import React from "react";
 import Button from "./components/Button";
 
-const App = () => {
-  const [count, setCount] = useState(0)
 
-  const onButtonClick = () => {
-    setCount(count + 1);
-  }
+const App = () => {
+  // const [count, setCount] = useState(0)
+
+ 
   return (
     <div>
-      <Button count={count} onButtonClick={onButtonClick} />
+      <Button  />
     </div>
   );
 };
